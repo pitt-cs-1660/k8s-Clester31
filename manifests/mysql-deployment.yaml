@@ -11,6 +11,9 @@ spec:
     - port: 3306
   ##
   # Create service selector labels here
+  selector:
+    app: wordpress
+    tier: myasql
   ##
 ---
 apiVersion: v1
@@ -20,6 +23,8 @@ metadata:
 data:
   ##
   # create non-sensative data attributes
+  MYSQL_DATABASE: wordpress
+  MYSQL_USER: wordpress_user
   ##
 ---
 apiVersion: apps/v1
@@ -32,10 +37,18 @@ metadata:
 spec:
   ##
   # Create app label selectors here
+  selector:
+    matchLabels:
+      app: wordpress
+      tier: mysql
   ##
   template:
     ##
     # Create metadata labels here
+    metadata:
+      labels:
+        app: wordpress
+        tier: mysql
     ##
     spec:
       containers:
@@ -45,11 +58,30 @@ spec:
         ##
         # mount non-sensitive environment vars from configmap
         # MYSQL_DATABASE | MYSQL_USER
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: wordpress-mysql
+              key: database
+        - name: MYSQL_USER
+          valueFrom:
+            configMapKeyRef:
+              name: wordpress-mysql
+              key: user
         ##
-
         ##
         # mount sensitive environment vars from secret
         # MYSQL_ROOT_PASSWORD | MYSQL_PASSWORD
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: database
+              key: root-password
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: database
+              key: user-password
         ##
         ports:
         - containerPort: 3306
@@ -57,8 +89,29 @@ spec:
       ##
       # define volume mounts here, be sure to reference
       # the PVC in your container spec
+      spec:
+        containers:
+        - name: mysql
+          image: mysql:8.0
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: mysql-persistent-storage
+        volumes:
+        - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: wordpress-mysql-pvc
       ##
 ---
 ##
 # Create persistent volume claim here
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wordpress-mysql-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
 ##
