@@ -13,7 +13,7 @@ spec:
   # Create service selector labels here
   selector:
     app: wordpress
-    tier: myasql
+    tier: mysql
   ##
 ---
 apiVersion: v1

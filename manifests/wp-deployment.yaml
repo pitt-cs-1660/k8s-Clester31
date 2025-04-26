@@ -25,7 +25,6 @@ data:
   # create non-sensative data attributes
   WORDPRESS_DB_HOST: wordpress-mysql
   WORDPRESS_DB_USER: wordpress
-  WORDPRESS_DB_PASSWORD: ${database.user-password}
   ##
 ---
 apiVersion: apps/v1
