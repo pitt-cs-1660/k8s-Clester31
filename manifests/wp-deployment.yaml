@@ -23,9 +23,9 @@ metadata:
 data:
   ##
   # create non-sensative data attributes
-    WORDPRESS_DB_HOST: wordpress-mysql
-    WORDPRESS_DB_USER: wordpress
-    WORDPRESS_DB_PASSWORD: ${database.user-password}
+  WORDPRESS_DB_HOST: wordpress-mysql
+  WORDPRESS_DB_USER: wordpress
+  WORDPRESS_DB_PASSWORD: ${database.user-password}
   ##
 ---
 apiVersion: apps/v1
@@ -86,15 +86,14 @@ spec:
       ##
       # define volume mounts here, be sure to reference
       # the PVC in your container spec
-      spec:
-        containers:
-        - name: mysql
-          image: mysql:8.0
-          volumeMounts:
-            - mountPath: /var/lib/mysql
-              name: mysql-persistent-storage
-        volumes:
-        - name: mysql-persistent-storage
+      containers:
+      - name: mysql
+        image: mysql:8.0
+        volumeMounts:
+          - mountPath: /var/lib/mysql
+            name: mysql-persistent-storage
+      volumes:
+      - name: mysql-persistent-storage
         persistentVolumeClaim:
           claimName: wordpress-mysql-pvc
       ##
