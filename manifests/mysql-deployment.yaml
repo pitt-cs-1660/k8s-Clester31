@@ -62,12 +62,12 @@ spec:
           valueFrom:
             configMapKeyRef:
               name: wordpress-mysql
-              key: database
+              key: MYSQL_DATABASE
         - name: MYSQL_USER
           valueFrom:
             configMapKeyRef:
               name: wordpress-mysql
-              key: user
+              key: MYSQL_USER
         ##
         ##
         # mount sensitive environment vars from secret
@@ -89,12 +89,9 @@ spec:
       ##
       # define volume mounts here, be sure to reference
       # the PVC in your container spec
-      containers:
-      - name: mysql
-        image: mysql:8.0
         volumeMounts:
-          - mountPath: /var/lib/mysql
-            name: mysql-persistent-storage
+        - mountPath: /var/lib/mysql
+          name: mysql-persistent-storage
       volumes:
       - name: mysql-persistent-storage
         persistentVolumeClaim:
